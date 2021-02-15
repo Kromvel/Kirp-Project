@@ -21,6 +21,7 @@ user_num_1 = ''
 user_num_2 = ''
 calc_op = ''
 user_result = None
+zero_degree = 0
 mark_up = types.InlineKeyboardMarkup(row_width=2)
 mark_up_2 = types.ReplyKeyboardMarkup(row_width=2)
 mark_up_3 = types.InlineKeyboardMarkup()
@@ -40,7 +41,7 @@ calc_btn_5 = types.KeyboardButton('^')
 calc_btn_6 = types.KeyboardButton('Результат')
 calc_btn_7 = types.KeyboardButton('Продолжить вычисление')
 mark_up.add(item_btn_1, item_btn_2, item_btn_3)
-mark_up_2.add(calc_btn_1, calc_btn_2, calc_btn_3, calc_btn_4, calc_btn_5)    
+mark_up_2.add(calc_btn_1, calc_btn_2, calc_btn_3, calc_btn_4,calc_btn_5)    
 mark_up_4.add(answer_btn_1, answer_btn_3)   
 mark_up_3.add(answer_btn_1, answer_btn_2)
 mark_up_5.add(answer_btn_1)
@@ -60,6 +61,8 @@ def greeting(message):
     elif message.text == '/proceed' or message.text == 'Меню':
         greeting_1 = message.from_user.first_name + ', что бы вы еще хотели узнать?'
         bot.send_message(message.chat.id, text=greeting_1, reply_markup=mark_up)
+    elif user_result != None:
+        bot.load_next_step_handlers()
     else:
         bot.send_message(message.chat.id, 'Напишите /start')
     
@@ -75,7 +78,7 @@ def callback_inline(call):
         if call.message:
             if call.data == "Калькулятор":
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Выбран калькулятор.", reply_markup=None)
-                bot.send_message(mess.chat.id, 'Введите число')
+                bot.send_message(mess.chat.id, ('Введите число'))
                 bot.register_next_step_handler(mess, calc_num1)
             elif call.data == "Узнать погоду":
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Выбрана погода.", reply_markup=None)
@@ -104,19 +107,27 @@ def callback_inline(call):
 def calc_num1(message, user_result=None):
     try:
         global user_num_1
+        
         if user_result == None:
             user_num_1 = int(message.text)
+            bot.send_message(message.from_user.id, text='Выберите операцию', reply_markup=mark_up_2)
+            bot.register_next_step_handler(message, calc_operation)
+           
         else:
-            user_num_1 = str(user_result)
-        bot.send_message(message.from_user.id, text='Выберите операцию', reply_markup=mark_up_2)
-        bot.register_next_step_handler(message, calc_operation)
+            user_num_1 = int(user_result)
+            bot.send_message(message.from_user.id, text='Выберите операцию', reply_markup=mark_up_2)
+            bot.register_next_step_handler(message, calc_operation)
+        
     except Exception as e:
         bot.reply_to(message, 'Возникла ошибка. Попробуйте снова.')
+        bot.send_message(message.chat.id, 'Введите число')
+        bot.register_next_step_handler(message, calc_num1)
 
 # Калькулятор: функция для выбора операции и второго числа
 def calc_operation(message):
     try:
         global calc_op
+        
         if message.text == '^':
             calc_op = '**'
         else:
@@ -131,14 +142,28 @@ def calc_operation(message):
 # Калькулятор: функция для выбора варианта показа результата или продолжения вычислений
 def calc_num2(message):
     try:
-        global user_num_2
+        global user_num_2, user_num_1
         user_num_2 = int(message.text)
+        user_num_2_length = len(message.text)
+        user_num_1_length = len(str(user_num_1))
+        user_num_1_length_three = 3
+        user_num_1_length_four = 4
+        user_num_2_length_max = 1
+        negative_first_degree =-1
         mark_up_2 = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
         mark_up_2.add(calc_btn_6, calc_btn_7)
-        bot.send_message(message.chat.id, "Показать результат или продолжить операцию?", reply_markup=mark_up_2)
-        bot.register_next_step_handler(message, computing_process)
+        if calc_op == '**' and (((user_num_1_length >= user_num_1_length_three and user_num_1_length < user_num_1_length_four) and user_num_2_length > user_num_2_length_max) or (user_num_1_length >= user_num_1_length_four and user_num_2_length >= user_num_2_length_max and (negative_first_degree != user_num_2 and user_num_2 != user_num_2_length_max and user_num_2 != zero_degree))):
+            bot.reply_to(message, 'При возведении в степень получилось слишком большое число.')
+            bot.send_message(message.chat.id, 'Введите снова первое число')
+            bot.register_next_step_handler(message, calc_num1)
+        else:
+            bot.send_message(message.chat.id, "Показать результат или продолжить операцию?", reply_markup=mark_up_2)
+            bot.register_next_step_handler(message, computing_process)
+
     except Exception as e:
         bot.reply_to(message, 'Возникла ошибка. Попробуйте снова.')
+        bot.send_message(message.chat.id, 'Введите число')
+        bot.register_next_step_handler(message, calc_num2)
 
 
 # Калькулятор: функция для показа результата или продолжения вычислений
@@ -163,11 +188,28 @@ def computing():
 
 # Калькулятор: функция для строки результата
 def calc_result_print():
-    global user_num_1, user_num_2, calc_op, user_result
-    return "Результат: " + str(user_num_1) + ' ' + calc_op + ' ' + str(user_num_2) + ' = ' + str(user_result) + '\nВведите /proceed'
+    global user_num_1, user_num_2, calc_op, user_result, zero_degree
+    user_result_string = str(user_result)
+    user_num_1_string = str(user_num_1)
+    user_num_1_string_len = len(user_num_1_string)
+    user_result_string_len = len(user_result_string)
+    user_result_string_len_max = 15
+    user_num_1_string_len_max = 10
+    print(user_num_1)
+    if user_result_string_len >= user_result_string_len_max and user_num_1_string_len < user_num_1_string_len_max:
+        return "Результат: " + user_num_1_string + ' ' + calc_op + ' ' + str(user_num_2) + ' = ' + "{:.0e}".format(user_result) + '\nВведите /proceed'
+    
+    elif user_result_string_len >= user_result_string_len_max and user_num_1_string_len >= user_num_1_string_len_max:
+        return "Результат: " + '(' + "{:.0e}".format(user_num_1) +')' + ' ' + calc_op + ' ' + str(user_num_2) + ' = ' + "{:.0e}".format(user_result) + '\nВведите /proceed'
+    
+    elif user_num_1_string_len >= user_num_1_string_len_max and calc_op=='**' and user_num_2 == zero_degree:
+        return "Результат: " + '(' + "{:.0e}".format(user_num_1) +')' + ' ' + calc_op + ' ' + str(user_num_2) + ' = ' + str(user_result) + '\nВведите /proceed'
+
+    else:
+        return "Результат: " + str(user_num_1) + ' ' + calc_op + ' ' + str(user_num_2) + ' = ' + str(user_result) + '\nВведите /proceed'
 
 bot.enable_save_next_step_handlers(delay=2)
-bot.load_next_step_handlers()   
+
 
 if __name__ == '__main__':
     bot.polling(none_stop=True, interval=0)
