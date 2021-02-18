@@ -7,12 +7,12 @@
 
 '''
 import telebot
-import requests
 from telebot import types
-from bs4 import BeautifulSoup
 from Modules import tokens as tk
 from Modules import owmapi as owm
 from Modules import parsing_news as n
+from Modules import fragment_of_the_book as book
+
 
 BOT_TOKEN=tk.BOT_TOKEN
 bot = telebot.TeleBot(BOT_TOKEN)
@@ -22,17 +22,20 @@ user_num_2 = ''
 calc_op = ''
 user_result = None
 zero_degree = 0
-mark_up = types.InlineKeyboardMarkup(row_width=2)
+mark_up = types.InlineKeyboardMarkup(row_width=1)
 mark_up_2 = types.ReplyKeyboardMarkup(row_width=2)
 mark_up_3 = types.InlineKeyboardMarkup()
 mark_up_4 = types.InlineKeyboardMarkup()
 mark_up_5 = types.InlineKeyboardMarkup()
+mark_up_6 = types.InlineKeyboardMarkup(row_width=1)
 answer_btn_1 = types.InlineKeyboardButton('Вернуться в меню', callback_data="Меню")
-answer_btn_3 = types.InlineKeyboardButton('Узнать погоду', callback_data="Узнать погоду")
 answer_btn_2 = types.InlineKeyboardButton('Узнать еще новость', callback_data="Еще новость")
+answer_btn_3 = types.InlineKeyboardButton('Узнать погоду', callback_data="Узнать погоду")
+answer_btn_4 = types.InlineKeyboardButton('Ввести название книги еще раз', callback_data="фрагмент")
 item_btn_1 = types.InlineKeyboardButton('Калькулятор', callback_data="Калькулятор")
 item_btn_2 = types.InlineKeyboardButton('Узнать погоду', callback_data="Узнать погоду")
 item_btn_3 = types.InlineKeyboardButton('Узнать новость про кино и тв', callback_data="новости кино")
+item_btn_4 = types.InlineKeyboardButton('Прочитать фрагмент из книги', callback_data="фрагмент")
 calc_btn_1 = types.KeyboardButton('+')
 calc_btn_2 = types.KeyboardButton('-')
 calc_btn_3 = types.KeyboardButton('*')
@@ -40,11 +43,12 @@ calc_btn_4 = types.KeyboardButton('/')
 calc_btn_5 = types.KeyboardButton('^')
 calc_btn_6 = types.KeyboardButton('Результат')
 calc_btn_7 = types.KeyboardButton('Продолжить вычисление')
-mark_up.add(item_btn_1, item_btn_2, item_btn_3)
+mark_up.add(item_btn_1, item_btn_2, item_btn_3, item_btn_4)
 mark_up_2.add(calc_btn_1, calc_btn_2, calc_btn_3, calc_btn_4,calc_btn_5)    
 mark_up_4.add(answer_btn_1, answer_btn_3)   
 mark_up_3.add(answer_btn_1, answer_btn_2)
 mark_up_5.add(answer_btn_1)
+mark_up_6.add(answer_btn_4,answer_btn_1)
 
 
 # Функция приветствия.
@@ -80,6 +84,10 @@ def callback_inline(call):
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Выбран калькулятор.", reply_markup=None)
                 bot.send_message(mess.chat.id, ('Введите число'))
                 bot.register_next_step_handler(mess, calc_num1)
+            elif call.data == "фрагмент":
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Выбрана опция получения фрагмента книги.", reply_markup=None)
+                bot.send_message(mess.chat.id, ('Введите название книги'))
+                bot.register_next_step_handler(mess, book.fragment_of_book)
             elif call.data == "Узнать погоду":
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Выбрана погода.", reply_markup=None)
                 bot.send_message(mess.chat.id, 'Укажите город')
