@@ -26,5 +26,5 @@ def get_weather(message):
         temp_dict_celsius = weather.temperature('celsius')
         answer = "Сейчас в городе " + message.text + " температура " + str(round(temp_dict_celsius['temp'], 1)) +' °C' +', ощущается как ' + str(round(temp_dict_celsius['feels_like'], 1)) + ' °C' + ", " + weather.detailed_status
         b.bot.send_message(message.chat.id, text=answer + greeting_2, reply_markup=b.mark_up)
-    except:
+    except Exception as e:
         b.bot.send_message(message.chat.id, 'Город не найден :(\nПопробуйте еще раз или вернитесь в меню', reply_markup=b.mark_up_4)
