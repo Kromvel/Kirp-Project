@@ -12,7 +12,7 @@ def fragment_of_book(message):
             b.bot.send_message(message.chat.id, text=read_demons, reply_markup=b.mark_up_6)
         elif message.text == 'Заповедник':
             with codecs.open('Заповедник.txt', encoding='utf-8') as reserve:
-                read_reserve=reserve.read()
+                read_reserve = reserve.read()
             b.bot.send_message(message.chat.id, text=read_reserve, reply_markup=b.mark_up_6)
         else:
             b.bot.send_message(message.chat.id, 'Название книги неверное. Попробуйте снова', reply_markup=b.mark_up_6)
