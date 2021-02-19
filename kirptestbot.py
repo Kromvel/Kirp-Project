@@ -14,7 +14,7 @@ from Modules import parsing_news as n
 from Modules import fragment_of_the_book as book
 
 
-BOT_TOKEN=tk.BOT_TOKEN
+BOT_TOKEN = tk.BOT_TOKEN
 bot = telebot.TeleBot(BOT_TOKEN)
 
 user_num_1 = ''
