@@ -6,7 +6,7 @@ sys.path.append("..")
 import kirptestbot as b
 from pyowm.utils.config import get_default_config
 
-OWM_TOKEN=tk.OWM_TOKEN
+OWM_TOKEN = tk.OWM_TOKEN
 CONFIG_DICT = get_default_config()
 CONFIG_DICT['language'] = 'ru'
 # Токен от api Openweather
@@ -28,4 +28,3 @@ def get_weather(message):
         b.bot.send_message(message.chat.id, text=answer + greeting_2, reply_markup=b.mark_up)
     except:
         b.bot.send_message(message.chat.id, 'Город не найден :(\nПопробуйте еще раз или вернитесь в меню', reply_markup=b.mark_up_4)
-        
