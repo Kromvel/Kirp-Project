@@ -60,7 +60,7 @@ def greeting(message):
     
     
     if message.text == '/start':
-        greeting_1 ='Здравствуйте, ' + message.from_user.first_name + ', что бы вы хотели узнать?'
+        greeting_1 = 'Здравствуйте, ' + message.from_user.first_name + ', что бы вы хотели узнать?'
         bot.send_message(message.chat.id, text=greeting_1, reply_markup=mark_up)
     elif message.text == '/proceed' or message.text == 'Меню':
         greeting_1 = message.from_user.first_name + ', что бы вы еще хотели узнать?'
