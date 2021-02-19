@@ -48,7 +48,7 @@ mark_up_2.add(calc_btn_1, calc_btn_2, calc_btn_3, calc_btn_4, calc_btn_5)
 mark_up_4.add(answer_btn_1, answer_btn_3)   
 mark_up_3.add(answer_btn_1, answer_btn_2)
 mark_up_5.add(answer_btn_1)
-mark_up_6.add(answer_btn_4,answer_btn_1)
+mark_up_6.add(answer_btn_4, answer_btn_1)
 
 
 # Функция приветствия.
