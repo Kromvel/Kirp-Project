@@ -1,9 +1,9 @@
-
 '''
 Это тестовый бот, выполняющий 3 функции:
 1. Простой калькулятор
 2. Узнать погоду в городе
 3. Парсинг последних новостей с сайта kino.tricolor.tv
+4. Прочитать фрагменты из двух книг: "Бесы" и "Заповедник"
 
 '''
 import telebot
@@ -77,7 +77,7 @@ def greeting(message):
 def callback_inline(call):
     global mark_up_3, mark_up_4, mark_up_5
     
-    mess.text=call.data
+    mess.text = call.data
     try:
         if call.message:
             if call.data == "Калькулятор":
@@ -210,7 +210,7 @@ def calc_result_print():
     elif user_result_string_len >= user_result_string_len_max and user_num_1_string_len >= user_num_1_string_len_max:
         return "Результат: " + '(' + "{:.0e}".format(user_num_1) +')' + ' ' + calc_op + ' ' + str(user_num_2) + ' = ' + "{:.0e}".format(user_result) + '\nВведите /proceed'
     
-    elif user_num_1_string_len >= user_num_1_string_len_max and calc_op=='**' and user_num_2 == zero_degree:
+    elif user_num_1_string_len >= user_num_1_string_len_max and calc_op == '**' and user_num_2 == zero_degree:
         return "Результат: " + '(' + "{:.0e}".format(user_num_1) +')' + ' ' + calc_op + ' ' + str(user_num_2) + ' = ' + str(user_result) + '\nВведите /proceed'
 
     else:
